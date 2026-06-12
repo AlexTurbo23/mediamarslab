@@ -4,7 +4,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const baseURL =
-  process.env.BASE_URL ?? "https://qa-a.recruitment.mediamarslab.com";
+  process.env.BASE_URL || "https://qa-a.recruitment.mediamarslab.com";
 
 export default defineConfig({
   testDir: "./tests",
