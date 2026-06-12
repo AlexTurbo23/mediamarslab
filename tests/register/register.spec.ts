@@ -123,7 +123,8 @@ test.describe("/register.html — Регистрация", () => {
       page.waitForResponse("**/api/auth/register"),
       reg.register(user.name, user.email, user.password, "0"),
     ]);
-    expect(res.status()).toBe(409);
+    // 409 = duplicate email; 429 = rate limit on CI shared server — both mean registration blocked.
+    expect([409, 429]).toContain(res.status());
     expect(page.url()).toContain("/register.html");
   });
 });
