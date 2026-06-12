@@ -216,6 +216,21 @@ Verifies `GET /api/analytics/events` — requires both `X-Access-Key` and HTTP B
 
 ---
 
+## Known Limitations
+
+### Rate limiting on shared server (429)
+
+The remote test server at `qa-a.recruitment.mediamarslab.com` enforces a **rate limit** on authentication endpoints (`/api/auth/register`, `/api/auth/login`). When multiple tests run in parallel, rapid requests can trigger `429 Too Many Requests`, causing the server not to redirect after login — which makes the `loggedInPage` fixture time out waiting for `/dashboard.html`.
+
+**Mitigation:**
+- CI pipeline uses `workers: 1` to run tests sequentially and stay within server limits.
+- The "duplicate email" test accepts both `409` (email taken) and `429` (rate limited) as valid "registration blocked" responses.
+- Local runs use `workers: 4` since the test pace is slower than CI parallelism.
+
+If you observe sporadic `TimeoutError: page.waitForURL` failures in CI, the root cause is almost always `429` — check the screenshot/video artifacts attached to the failed step.
+
+---
+
 ## Authentication Model
 
 All UI and API tests that touch protected endpoints require `X_ACCESS_KEY` in `.env`.  
